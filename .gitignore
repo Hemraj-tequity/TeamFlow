@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
+.env
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
