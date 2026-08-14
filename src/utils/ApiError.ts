@@ -39,6 +39,10 @@ export class ApiError extends Error {
     return new ApiError(409, message, details);
   }
 
+  static rateLimit(message: string, details?: unknown) {
+    return new ApiError(429, message, details);
+  }
+
   static internal(message = "Internal server error", details?: unknown) {
     return new ApiError(500, message, details, false);
   }
