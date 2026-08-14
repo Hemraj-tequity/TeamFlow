@@ -8,4 +8,5 @@ export const AUTH_MESSAGES = {
   LOGIN_FAILED: "Login failed",
   MISSING_CREDENTIALS: "Email and password are required",
   INVALID_CREDENTIALS: "Invalid email or password",
+  RATE_LIMIT: "Too many login attempts. Please try again later.",
 } as const;

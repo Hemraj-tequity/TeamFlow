@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
 import { UserRole } from "../generated/prisma/enums.js";
 import { AUTH_MESSAGES } from "../utils/constants.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/authHelper.js";
+import { ApiError } from "../utils/ApiError.js";
 
 // export const registerUser = async (
 //   email: string,
@@ -46,7 +48,7 @@ export const loginUser = async (
   password: string
 ) => {
   if (!email || !password) {
-    throw new Error(AUTH_MESSAGES.MISSING_CREDENTIALS);
+    throw ApiError.badRequest(AUTH_MESSAGES.MISSING_CREDENTIALS);
   }
 
   const user = await prisma.user.findUnique({
@@ -56,7 +58,7 @@ export const loginUser = async (
   });
 
   if (!user) {
-    throw new Error(AUTH_MESSAGES.INVALID_CREDENTIALS);
+    throw ApiError.unauthorized(AUTH_MESSAGES.INVALID_CREDENTIALS);
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -65,12 +67,27 @@ export const loginUser = async (
   );
 
   if (!isPasswordValid) {
-    throw new Error(AUTH_MESSAGES.INVALID_CREDENTIALS);
+    throw ApiError.unauthorized(AUTH_MESSAGES.INVALID_CREDENTIALS);
   }
+
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken(user.id);
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      refreshToken,
+    },
+  });
 
   return {
     id: user.id,
     name: user.name,
     email: user.email,
+    role: user.role,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
   };
 };
