@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
 import { UserRole } from "../generated/prisma/enums.js";
 import { AUTH_MESSAGES } from "../utils/constants.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/authHelper.js";
 
 // export const registerUser = async (
 //   email: string,
@@ -68,9 +69,24 @@ export const loginUser = async (
     throw new Error(AUTH_MESSAGES.INVALID_CREDENTIALS);
   }
 
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken(user.id);
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      refreshToken,
+    },
+  });
+
   return {
     id: user.id,
     name: user.name,
     email: user.email,
+    role: user.role,
+    accessToken: accessToken,
+    refreshToken: refreshToken,
   };
 };

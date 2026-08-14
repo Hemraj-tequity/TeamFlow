@@ -40,12 +40,10 @@ export const loginController = async (
       message: AUTH_MESSAGES.LOGIN_SUCCESS,
       user,
     });
-  } catch (error) {
+  } catch (error: any) {
     return res.status(401).json({
       success: false,
-      message: error instanceof Error
-        ? error.message
-        : AUTH_MESSAGES.LOGIN_FAILED,
+      message: AUTH_MESSAGES.LOGIN_FAILED,
     });
   }
 };
