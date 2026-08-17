@@ -7,7 +7,12 @@ export const endpoints = {
   createOrganization : "/organization",
   getAllOrganizations : "/organization/all",
   getOrganizationById : "/organization/:id",
-  updateOrganization : "/organization/:id"
+  updateOrganization : "/organization/:id",
+  
+
+  createOrganizationMember : "/organization-member",
+  getAllOrganizationMembers : "/organization-member/:id",
+  deleteOrganizationMember : "/organization-member/:id",
 };
 
 export const COMMON_MESSAGES = {
@@ -31,4 +36,14 @@ export const ORG_MESSAGES = {
     MISSING_ORG_ID: "Organization ID is required",
     NOT_FOUND: "Organization not found",
     UPDATE_SUCCESS: "Organization Updated successfully",
+} as const;
+
+export const ORG_MEMBER_MESSAGES = {
+    MISSING_FIELDS: "userId and organizationId both are required",
+    ALREADY_EXIST: "This user is already a member of this organization",
+    CREATE_SUCCESS: "Organization member created successfully",
+    GETALL_MEMBERS_SUCCESS: "Organization member fetched successfully",
+    DELETE_MEMBERS_SUCCESS: "This member deleted successfully",
+    MISSING_MEMBER_ID: "Organization Member ID is required",
+    MEMBER_NOT_FOUND: "Member not found in this organization",
 } as const;
