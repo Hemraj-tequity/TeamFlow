@@ -56,7 +56,8 @@ export const ModelName = {
   OrganizationMember: 'OrganizationMember',
   Project: 'Project',
   Task: 'Task',
-  ProjectMember: 'ProjectMember'
+  ProjectMember: 'ProjectMember',
+  Comment: 'Comment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -148,6 +149,18 @@ export const ProjectMemberScalarFieldEnum = {
 } as const
 
 export type ProjectMemberScalarFieldEnum = (typeof ProjectMemberScalarFieldEnum)[keyof typeof ProjectMemberScalarFieldEnum]
+
+
+export const CommentScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  taskId: 'taskId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
 export const SortOrder = {

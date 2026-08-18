@@ -7,6 +7,7 @@ import organizationProjectRouter from "./organization-projects.routes.js";
 import taskRouter from "./task.routes.js";
 import organizationProjectMemberRouter from "./organization-project-member.routes.js";
 import userRouter from "./user.routes.js";
+import commentRouter from "./comment.routes.js";
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use(organizationMemberRoutes);
 router.use(organizationProjectRouter);
 router.use(taskRouter);
 router.use(organizationProjectMemberRouter);
+router.use(commentRouter);
 
 export default router;

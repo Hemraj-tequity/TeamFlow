@@ -71,3 +71,8 @@ export type Task = Prisma.TaskModel
  * 
  */
 export type ProjectMember = Prisma.ProjectMemberModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel

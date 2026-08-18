@@ -30,6 +30,12 @@ export const endpoints = {
   addProjectMember : "/project/member",
   getAllProjectMember : "/project/member/:projectId/all",
   deleteProjectMember : "/project/member",
+
+  createComment : "/comment",
+  getAllComments : "/comment/:taskId/all",
+  getCommentById : "/comment/:id",
+  updateComment : "/comment/:id",
+  deleteComment : "/comment",
 };
 
 export const COMMON_MESSAGES = {
@@ -99,4 +105,18 @@ export const PROJECT_MEMBER_MESSAGES = {
   GETALL_SUCCESS: "Fetched all project members successfully",
   NOT_FOUND: "Members is not found in this project",
   DELETE_PROJECT_MEMBER_SUCCESS: "Member deleted successfully",
+} as const;
+
+export const COMMENT_MESSAGES = {
+  MISSING_FIELDS: "Task ID, User ID and content are required",
+  MISSING_COMMENT_ID: "Task ID and Comment ID both are required",
+  MISSING_CONTENT: "Content is required",
+  CREATE_SUCCESS: "Comment added successfully",
+  GETALL_SUCCESS: "Comments fetched successfully",
+  GET_SUCCESS: "Comment fetched successfully",
+  UPDATE_SUCCESS: "Comment updated successfully",
+  DELETE_SUCCESS: "Comment deleted successfully",
+  TASK_NOT_FOUND: "This task not found",
+  USER_NOT_FOUND: "This user not found",
+  COMMENT_NOT_FOUND: "This comment not found",
 } as const;
