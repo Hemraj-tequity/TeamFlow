@@ -350,6 +350,78 @@ button {
   gap: 0.5rem;
 }
 
+/* Tasks modal */
+.task-form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.task-item {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.task-main {
+  width: 100%;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.task-description {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.task-actions select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.badge-priority-low {
+  background: var(--inactive-bg);
+  color: var(--inactive-text);
+}
+
+.badge-priority-medium {
+  background: #eaf1fd;
+  color: var(--primary-hover);
+}
+
+.badge-priority-high {
+  background: #fdf1e0;
+  color: #a3620a;
+}
+
+.badge-priority-urgent {
+  background: #fdecea;
+  color: #8a231d;
+}
+
+@media (max-width: 640px) {
+  .task-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .badge {
   display: inline-block;
   padding: 0.2rem 0.6rem;
@@ -440,6 +512,10 @@ button {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(16, 24, 40, 0.2);
+}
+
+.modal-wide {
+  max-width: 620px;
 }
 
 .modal-header {

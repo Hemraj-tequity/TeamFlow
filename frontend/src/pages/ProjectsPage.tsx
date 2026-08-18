@@ -8,6 +8,7 @@ import { Loader, ErrorBanner, EmptyState } from "../components/StateViews";
 import { Modal } from "../components/Modal";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MembersModal } from "../components/MembersModal";
+import { TasksModal } from "../components/TasksModal";
 
 export function ProjectsPage() {
   const [organizations, setOrganizations] = useState<Organization[] | null>(null);
@@ -24,6 +25,7 @@ export function ProjectsPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [membersProject, setMembersProject] = useState<Project | null>(null);
+  const [tasksProject, setTasksProject] = useState<Project | null>(null);
 
   const loadOrganizations = () => {
     setOrgsLoading(true);
@@ -146,6 +148,9 @@ export function ProjectsPage() {
                       </td>
                       <td className="muted">{new Date(project.createdAt).toLocaleDateString()}</td>
                       <td className="row-actions">
+                        <button type="button" className="btn btn-ghost" onClick={() => setTasksProject(project)}>
+                          Tasks
+                        </button>
                         <button type="button" className="btn btn-ghost" onClick={() => setMembersProject(project)}>
                           Members
                         </button>
@@ -195,6 +200,14 @@ export function ProjectsPage() {
           fetchMembers={() => getAllProjectMembers(membersProject.id)}
           addMember={(userId) => addProjectMember(membersProject.id, userId)}
           removeMember={(member) => deleteProjectMember(membersProject.id, member.id)}
+        />
+      )}
+
+      {tasksProject && (
+        <TasksModal
+          projectId={tasksProject.id}
+          projectName={tasksProject.name}
+          onClose={() => setTasksProject(null)}
         />
       )}
     </div>

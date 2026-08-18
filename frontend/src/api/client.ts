@@ -12,6 +12,11 @@ export const endpoints = {
   getAllProjects: (orgId: string) => `/project/${orgId}/all`,
   deleteProject: "/project",
 
+  createTask: "/task",
+  getAllTasks: (projectId: string) => `/task/${projectId}/all`,
+  updateTask: (taskId: string) => `/task/${taskId}`,
+  deleteTask: "/task",
+
   createOrganizationMember: "/organization-member",
   getAllOrganizationMembers: (orgId: string) => `/organization-member/${orgId}`,
   deleteOrganizationMember: (memberId: string) => `/organization-member/${memberId}`,

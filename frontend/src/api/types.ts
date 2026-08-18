@@ -1,6 +1,8 @@
 export type UserRole = "ADMIN" | "MANAGER" | "USER";
 export type OrganizationStatus = "ACTIVE" | "INACTIVE";
 export type ProjectStatus = "ACTIVE" | "ARCHIVED";
+export type TaskStatus = "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "COMPLETED" | "CANCELLED";
+export type TaskPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 
 export interface AuthUser {
   id: number;
@@ -26,6 +28,18 @@ export interface Project {
   name: string;
   description: string | null;
   status: ProjectStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Task {
+  id: string;
+  projectId: string;
+  assigneeId: number | null;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: TaskPriority;
   createdAt: string;
   updatedAt: string;
 }
