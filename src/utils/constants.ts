@@ -8,6 +8,7 @@ export const endpoints = {
   getAllOrganizations : "/organization/all",
   getOrganizationById : "/organization/:id",
   updateOrganization : "/organization/:id",
+  deleteOrganization : "/organization/:id",
   
 
   createOrganizationMember : "/organization-member",
@@ -51,6 +52,7 @@ export const ORG_MESSAGES = {
     MISSING_ORG_ID: "Organization ID is required",
     NOT_FOUND: "Organization not found",
     UPDATE_SUCCESS: "Organization Updated successfully",
+    DELETE_SUCCESS: "Organization Deleted successfully",
 } as const;
 
 export const ORG_MEMBER_MESSAGES = {
