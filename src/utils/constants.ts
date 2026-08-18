@@ -4,12 +4,13 @@ export const AUTH_BASE_PATH = "/auth";
 export const AUTH_LOGIN_PATH = "/login";
 
 export const endpoints = {
+  getAllUsers: "/users",
+
   createOrganization : "/organization",
   getAllOrganizations : "/organization/all",
   getOrganizationById : "/organization/:id",
   updateOrganization : "/organization/:id",
   deleteOrganization : "/organization/:id",
-  
 
   createOrganizationMember : "/organization-member",
   getAllOrganizationMembers : "/organization-member/:id",
@@ -33,6 +34,10 @@ export const endpoints = {
 
 export const COMMON_MESSAGES = {
   INTERNAL_SERVER_ERROR: "Internal server error",
+} as const;
+
+export const USERS_MESSAGES = {
+  GETALL_USERS: "Users fetched successfully",
 } as const;
 
 export const AUTH_MESSAGES = {

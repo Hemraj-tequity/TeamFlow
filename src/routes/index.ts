@@ -6,10 +6,12 @@ import organizationMemberRoutes from "./organization-member.routes.js";
 import organizationProjectRouter from "./organization-projects.routes.js";
 import taskRouter from "./task.routes.js";
 import organizationProjectMemberRouter from "./organization-project-member.routes.js";
+import userRouter from "./user.routes.js";
 
 const router = express.Router();
 
 router.use(AUTH_BASE_PATH, authRoutes);
+router.use(userRouter);
 router.use(organizationRoutes);
 router.use(organizationMemberRoutes);
 router.use(organizationProjectRouter);
