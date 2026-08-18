@@ -44,6 +44,13 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
 export interface OrganizationMember {
   id: string;
   userId: number;

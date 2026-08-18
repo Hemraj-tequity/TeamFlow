@@ -5,6 +5,8 @@ const API_BASE_PATH = "/api";
 export const endpoints = {
   login: "/auth/login",
 
+  getAllUsers: "/users",
+
   createOrganization: "/organization",
   getAllOrganizations: "/organization/all",
   updateOrganization: (id: string) => `/organization/${id}`,

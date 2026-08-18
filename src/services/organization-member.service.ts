@@ -14,7 +14,7 @@ export const createOrganizationMember = async (
 
     const findOrganizationMember = await prisma.organizationMember.findFirst({
       where: {
-        organizationId
+        userId
       },
     });
 
