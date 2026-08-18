@@ -7,6 +7,8 @@ export const endpoints = {
 
   createOrganization: "/organization",
   getAllOrganizations: "/organization/all",
+  updateOrganization: (id: string) => `/organization/${id}`,
+  deleteOrganization: (id: string) => `/organization/${id}`,
 
   createProject: "/project",
   getAllProjects: (orgId: string) => `/project/${orgId}/all`,

@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { createOrganization, getAllOrganizations } from "../api/organizations";
+import { createOrganization, deleteOrganization, getAllOrganizations, updateOrganization } from "../api/organizations";
 import {
   createOrganizationMember,
   deleteOrganizationMember,
@@ -9,6 +9,7 @@ import { ApiRequestError } from "../api/client";
 import type { Organization, OrganizationStatus } from "../api/types";
 import { Loader, ErrorBanner, EmptyState } from "../components/StateViews";
 import { Modal } from "../components/Modal";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MembersModal } from "../components/MembersModal";
 
 export function OrganizationsPage() {
@@ -17,7 +18,12 @@ export function OrganizationsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [showCreate, setShowCreate] = useState(false);
+  const [editOrg, setEditOrg] = useState<Organization | null>(null);
   const [membersOrg, setMembersOrg] = useState<Organization | null>(null);
+
+  const [deleteTarget, setDeleteTarget] = useState<Organization | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -33,6 +39,26 @@ export function OrganizationsPage() {
   const handleCreated = (org: Organization) => {
     setOrganizations((prev) => (prev ? [org, ...prev] : [org]));
     setShowCreate(false);
+  };
+
+  const handleUpdated = (org: Organization) => {
+    setOrganizations((prev) => prev?.map((o) => (o.id === org.id ? org : o)) ?? null);
+    setEditOrg(null);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteOrganization(deleteTarget.id);
+      setOrganizations((prev) => prev?.filter((o) => o.id !== deleteTarget.id) ?? null);
+      setDeleteTarget(null);
+    } catch (err) {
+      setDeleteError(err instanceof ApiRequestError ? err.message : "Failed to delete organization.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -73,9 +99,22 @@ export function OrganizationsPage() {
                     </span>
                   </td>
                   <td className="muted">{new Date(org.createdAt).toLocaleDateString()}</td>
-                  <td>
+                  <td className="row-actions">
                     <button type="button" className="btn btn-ghost" onClick={() => setMembersOrg(org)}>
                       Members
+                    </button>
+                    <button type="button" className="btn btn-ghost" onClick={() => setEditOrg(org)}>
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger-ghost"
+                      onClick={() => {
+                        setDeleteError(null);
+                        setDeleteTarget(org);
+                      }}
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -86,7 +125,15 @@ export function OrganizationsPage() {
       )}
 
       {showCreate && (
-        <CreateOrganizationModal onClose={() => setShowCreate(false)} onCreated={handleCreated} />
+        <OrganizationFormModal onClose={() => setShowCreate(false)} onSaved={handleCreated} />
+      )}
+
+      {editOrg && (
+        <OrganizationFormModal
+          organization={editOrg}
+          onClose={() => setEditOrg(null)}
+          onSaved={handleUpdated}
+        />
       )}
 
       {membersOrg && (
@@ -98,20 +145,34 @@ export function OrganizationsPage() {
           removeMember={(member) => deleteOrganizationMember(member.id)}
         />
       )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete Organization"
+          message={`Are you sure you want to delete "${deleteTarget.name}"? This also deletes all of its projects, tasks, and members. This action cannot be undone.`}
+          busy={deleting}
+          error={deleteError}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
 
-function CreateOrganizationModal({
+function OrganizationFormModal({
+  organization,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  organization?: Organization;
   onClose: () => void;
-  onCreated: (org: Organization) => void;
+  onSaved: (org: Organization) => void;
 }) {
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [status, setStatus] = useState<OrganizationStatus>("ACTIVE");
+  const isEdit = !!organization;
+  const [name, setName] = useState(organization?.name ?? "");
+  const [slug, setSlug] = useState(organization?.slug ?? "");
+  const [status, setStatus] = useState<OrganizationStatus>(organization?.status ?? "ACTIVE");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -121,17 +182,21 @@ function CreateOrganizationModal({
     setError(null);
 
     try {
-      const org = await createOrganization(name.trim(), slug.trim(), status);
-      onCreated(org);
+      const org = isEdit
+        ? await updateOrganization(organization!.id, name.trim(), slug.trim(), status)
+        : await createOrganization(name.trim(), slug.trim(), status);
+      onSaved(org);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to create organization.");
+      setError(
+        err instanceof ApiRequestError ? err.message : `Failed to ${isEdit ? "update" : "create"} organization.`
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal title="New Organization" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Organization" : "New Organization"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <label className="field">
           <span>Name</span>
@@ -158,7 +223,7 @@ function CreateOrganizationModal({
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={submitting}>
-            {submitting ? "Creating..." : "Create"}
+            {submitting ? "Saving..." : isEdit ? "Save" : "Create"}
           </button>
         </div>
       </form>

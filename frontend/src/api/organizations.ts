@@ -21,3 +21,19 @@ export const createOrganization = (name: string, slug: string, status: Organizat
     method: "POST",
     body: { name, slug, status },
   }).then((res) => res.organization);
+
+export const updateOrganization = (
+  id: string,
+  name: string,
+  slug: string,
+  status: OrganizationStatus
+) =>
+  apiRequest<CreateOrganizationResponse>(endpoints.updateOrganization(id), {
+    method: "PATCH",
+    body: { name, slug, status },
+  }).then((res) => res.organization);
+
+export const deleteOrganization = (id: string) =>
+  apiRequest<{ success: true; message: string }>(endpoints.deleteOrganization(id), {
+    method: "DELETE",
+  });
