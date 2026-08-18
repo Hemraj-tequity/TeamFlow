@@ -141,7 +141,7 @@ export const deleteOrganization = async (id: string) => {
 
     const organization = await prisma.organization.delete({
       where: {
-        id,
+        id
       }
     });
 
