@@ -18,6 +18,10 @@ export const endpoints = {
   getAllProjects : "/project/:orgId/all",
   getProjectById : "/project/:id",
   deleteProject : "/project",
+
+  addProjectMember : "/project/member",
+  getAllProjectMember : "/project/member/:projectId/all",
+  deleteProjectMember : "/project/member",
 };
 
 export const COMMON_MESSAGES = {
@@ -61,4 +65,13 @@ export const PROJECT_MESSAGES = {
   DELETE_PROJECT_SUCCESS: "This project deleted successfully",
   MISSING_PORJECT_ID: "Organization ID and Project ID both are required",
   PROJECT_NOT_FOUND: "This project not found in this organization",
+} as const;
+
+export const PROJECT_MEMBER_MESSAGES = {
+  MISSING_FIELDS: "All the fields are required",
+  CREATE_SUCCESS: "Project member added successfully",
+  ALREADY_EXIST: "This member is already exist in this project",
+  GETALL_SUCCESS: "Fetched all project members successfully",
+  NOT_FOUND: "Members is not found in this project",
+  DELETE_PROJECT_MEMBER_SUCCESS: "Member deleted successfully",
 } as const;
