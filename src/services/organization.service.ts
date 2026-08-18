@@ -122,3 +122,35 @@ export const updateOrganization = async (
     throw ApiError.internal(COMMON_MESSAGES.INTERNAL_SERVER_ERROR);
   }
 };
+
+export const deleteOrganization = async (id: string) => {
+  try {
+    if (!id) {
+      throw ApiError.badRequest(ORG_MESSAGES.MISSING_ORG_ID);
+    }
+
+    const findorganization = await prisma.organization.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!findorganization) {
+      throw ApiError.notFound(ORG_MESSAGES.NOT_FOUND);
+    }
+
+    const organization = await prisma.organization.delete({
+      where: {
+        id,
+      }
+    });
+
+    return organization;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    throw ApiError.internal(COMMON_MESSAGES.INTERNAL_SERVER_ERROR);
+  }
+};

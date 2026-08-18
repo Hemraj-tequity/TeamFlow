@@ -3,7 +3,8 @@ import {
   createOrganization, 
   getAllOrganization, 
   getOrganizationById, 
-  updateOrganization
+  updateOrganization,
+  deleteOrganization
 } from "../services/organization.service.js";
 import { ORG_MESSAGES } from "../utils/constants.js";
 
@@ -62,6 +63,21 @@ export const updateOrganizationController = async (
   return res.status(200).json({
     success: true,
     message: ORG_MESSAGES.UPDATE_SUCCESS,
+    organization,
+  });
+};
+
+export const deleteOrganizationController = async (
+  req: Request,
+  res: Response
+) => {
+  const id = req.params.id as string;
+
+  const organization = await deleteOrganization(id);
+
+  return res.status(200).json({
+    success: true,
+    message: ORG_MESSAGES.DELETE_SUCCESS,
     organization,
   });
 };
