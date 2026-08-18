@@ -25,6 +25,7 @@ model User {
 
   organizationMembers OrganizationMember[]
   tasks               Task[]
+  projectMembers      ProjectMember[]
 }
 
 enum OrganizationStatus {
@@ -74,8 +75,9 @@ model Project {
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  tasks        Task[]
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  tasks          Task[]
+  projectMembers ProjectMember[]
 
   @@index([organizationId])
   @@map("projects")
@@ -114,4 +116,19 @@ model Task {
 
   @@index([projectId])
   @@index([assigneeId])
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String   @map("project_id")
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@map("project_members")
 }
