@@ -40,6 +40,7 @@ model Organization {
   updatedAt DateTime           @updatedAt
 
   organizationMembers OrganizationMember[]
+  projects            Project[]
 }
 
 model OrganizationMember {
@@ -56,4 +57,24 @@ model OrganizationMember {
   @@unique([userId, organizationId])
   @@index([organizationId])
   @@index([userId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  organizationId String        @map("organization_id")
+  name           String        @db.VarChar(150)
+  description    String?       @db.Text
+  status         ProjectStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+  @@map("projects")
 }
