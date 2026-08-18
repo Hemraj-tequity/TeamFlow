@@ -3,7 +3,9 @@ import { Modal } from "./Modal";
 import { Loader, ErrorBanner, EmptyState } from "./StateViews";
 import { ApiRequestError } from "../api/client";
 import { createTask, deleteTask, getAllTasks, updateTaskStatus } from "../api/tasks";
-import type { Task, TaskPriority, TaskStatus } from "../api/types";
+import { getAllProjectMembers } from "../api/projectMembers";
+import { getAllUsers } from "../api/users";
+import type { Task, TaskPriority, TaskStatus, User } from "../api/types";
 
 const STATUS_OPTIONS: TaskStatus[] = ["TODO", "IN_PROGRESS", "IN_REVIEW", "COMPLETED", "CANCELLED"];
 const PRIORITY_OPTIONS: TaskPriority[] = ["LOW", "MEDIUM", "HIGH", "URGENT"];
@@ -31,6 +33,9 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
   const [deleting, setDeleting] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
 
+  const [assignees, setAssignees] = useState<User[] | null>(null);
+  const [assigneesError, setAssigneesError] = useState<string | null>(null);
+
   const load = () => {
     setLoading(true);
     setError(null);
@@ -40,7 +45,22 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
       .finally(() => setLoading(false));
   };
 
+  const loadAssignees = () => {
+    setAssigneesError(null);
+    Promise.all([getAllProjectMembers(projectId), getAllUsers()])
+      .then(([members, allUsers]) => {
+        const memberUserIds = new Set(members.map((m) => m.userId));
+        setAssignees(allUsers.filter((u) => memberUserIds.has(u.id)));
+      })
+      .catch((err) =>
+        setAssigneesError(err instanceof ApiRequestError ? err.message : "Failed to load project members.")
+      );
+  };
+
   useEffect(load, [projectId]);
+  useEffect(loadAssignees, [projectId]);
+
+  const userById = new Map((assignees ?? []).map((u) => [u.id, u]));
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,11 +69,6 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
 
     try {
       const parsedAssigneeId = assigneeId ? Number(assigneeId) : undefined;
-      if (assigneeId && Number.isNaN(parsedAssigneeId)) {
-        setCreateError("Assignee User ID must be a number.");
-        setCreating(false);
-        return;
-      }
 
       const task = await createTask(projectId, title.trim(), description.trim(), parsedAssigneeId, status, priority);
       setTasks((prev) => (prev ? [task, ...prev] : [task]));
@@ -111,14 +126,17 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
 
         <div className="task-form-row">
           <label className="field">
-            <span>Assignee User ID (optional)</span>
-            <input
-              type="number"
-              min={1}
-              value={assigneeId}
-              onChange={(e) => setAssigneeId(e.target.value)}
-              placeholder="e.g. 1"
-            />
+            <span>Assignee (optional)</span>
+            <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+              <option value="">
+                {assignees === null ? "Loading project members..." : "Unassigned"}
+              </option>
+              {(assignees ?? []).map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.email}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="field">
@@ -144,6 +162,12 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
           </label>
         </div>
 
+        {assignees !== null && assignees.length === 0 && (
+          <p className="muted">
+            No project members to assign yet. Add members via the project's Members option first.
+          </p>
+        )}
+        {assigneesError && <ErrorBanner message={assigneesError} onRetry={loadAssignees} />}
         {createError && <p className="field-error">{createError}</p>}
 
         <div className="modal-actions">
@@ -170,8 +194,10 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
                 </div>
                 {task.description && <p className="muted task-description">{task.description}</p>}
                 <span className="muted member-date">
-                  {task.assigneeId ? `Assignee: User #${task.assigneeId}` : "Unassigned"} ·{" "}
-                  {new Date(task.createdAt).toLocaleDateString()}
+                  {task.assigneeId
+                    ? `Assignee: ${userById.get(task.assigneeId)?.email ?? `User #${task.assigneeId}`}`
+                    : "Unassigned"}{" "}
+                  · {new Date(task.createdAt).toLocaleDateString()}
                 </span>
               </div>
 

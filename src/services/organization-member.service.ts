@@ -1,5 +1,4 @@
 import { prisma } from "../lib/prisma.js";
-import { OrganizationStatus } from "../generated/prisma/enums.js";
 import { COMMON_MESSAGES, ORG_MEMBER_MESSAGES } from "../utils/constants.js";
 import { ApiError } from "../utils/ApiError.js";
 
@@ -14,7 +13,8 @@ export const createOrganizationMember = async (
 
     const findOrganizationMember = await prisma.organizationMember.findFirst({
       where: {
-        userId
+        userId,
+        organizationId
       },
     });
 

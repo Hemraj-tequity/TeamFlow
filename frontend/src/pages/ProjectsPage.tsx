@@ -1,13 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { getAllOrganizations } from "../api/organizations";
 import { createProject, deleteProject, getAllProjects } from "../api/projects";
-import { addProjectMember, deleteProjectMember, getAllProjectMembers } from "../api/projectMembers";
 import { ApiRequestError } from "../api/client";
 import type { Organization, Project } from "../api/types";
 import { Loader, ErrorBanner, EmptyState } from "../components/StateViews";
 import { Modal } from "../components/Modal";
 import { ConfirmDialog } from "../components/ConfirmDialog";
-import { MembersModal } from "../components/MembersModal";
+import { ProjectMembersModal } from "../components/ProjectMembersModal";
 import { TasksModal } from "../components/TasksModal";
 
 export function ProjectsPage() {
@@ -194,12 +193,11 @@ export function ProjectsPage() {
       )}
 
       {membersProject && (
-        <MembersModal
-          title={`Members — ${membersProject.name}`}
+        <ProjectMembersModal
+          projectId={membersProject.id}
+          projectName={membersProject.name}
+          organizationId={membersProject.organizationId}
           onClose={() => setMembersProject(null)}
-          fetchMembers={() => getAllProjectMembers(membersProject.id)}
-          addMember={(userId) => addProjectMember(membersProject.id, userId)}
-          removeMember={(member) => deleteProjectMember(membersProject.id, member.id)}
         />
       )}
 
