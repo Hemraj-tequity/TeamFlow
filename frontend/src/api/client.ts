@@ -1,6 +1,6 @@
 import type { ApiFailure } from "./types";
 
-const API_BASE_PATH = "/api";
+const API_BASE_PATH = "http://localhost:3000/api";
 
 export const endpoints = {
   login: "/auth/login",
