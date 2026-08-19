@@ -3,6 +3,7 @@ import Routes from "./routes/index.js";
 import { API_BASE_PATH } from "./utils/constants.js";
 import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 import cors from "cors";
+import helmet from "helmet";
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.use(
     origin: "http://localhost:5173",
   })
 );
+
+app.use(helmet())
 
 app.use(express.json());
 
