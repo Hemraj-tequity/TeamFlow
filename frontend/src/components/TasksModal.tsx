@@ -3,8 +3,10 @@ import { Modal } from "./Modal";
 import { Loader, ErrorBanner, EmptyState } from "./StateViews";
 import { ApiRequestError } from "../api/client";
 import { createTask, deleteTask, getAllTasks, updateTaskStatus } from "../api/tasks";
+import { getAllComments } from "../api/comments";
 import { getAllProjectMembers } from "../api/projectMembers";
 import { getAllUsers } from "../api/users";
+import { CommentsDrawer } from "./CommentsDrawer";
 import type { Task, TaskPriority, TaskStatus, User } from "../api/types";
 
 const STATUS_OPTIONS: TaskStatus[] = ["TODO", "IN_PROGRESS", "IN_REVIEW", "COMPLETED", "CANCELLED"];
@@ -33,14 +35,30 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
   const [deleting, setDeleting] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
 
+  const [commentsTask, setCommentsTask] = useState<Task | null>(null);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+
   const [assignees, setAssignees] = useState<User[] | null>(null);
   const [assigneesError, setAssigneesError] = useState<string | null>(null);
+
+  const loadCommentCounts = (taskList: Task[]) => {
+    Promise.all(
+      taskList.map((t) =>
+        getAllComments(t.id)
+          .then((comments) => [t.id, comments.length] as const)
+          .catch(() => [t.id, 0] as const)
+      )
+    ).then((entries) => setCommentCounts(Object.fromEntries(entries)));
+  };
 
   const load = () => {
     setLoading(true);
     setError(null);
     getAllTasks(projectId)
-      .then(setTasks)
+      .then((fetchedTasks) => {
+        setTasks(fetchedTasks);
+        loadCommentCounts(fetchedTasks);
+      })
       .catch((err) => setError(err instanceof ApiRequestError ? err.message : "Failed to load tasks."))
       .finally(() => setLoading(false));
   };
@@ -72,6 +90,7 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
 
       const task = await createTask(projectId, title.trim(), description.trim(), parsedAssigneeId, status, priority);
       setTasks((prev) => (prev ? [task, ...prev] : [task]));
+      setCommentCounts((prev) => ({ ...prev, [task.id]: 0 }));
       setTitle("");
       setDescription("");
       setAssigneeId("");
@@ -213,6 +232,13 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
                   ))}
                 </select>
 
+                <button type="button" className="btn btn-ghost" onClick={() => setCommentsTask(task)}>
+                  Comments
+                  {commentCounts[task.id] > 0 && (
+                    <span className="badge-count">{commentCounts[task.id]}</span>
+                  )}
+                </button>
+
                 {confirmingId === task.id ? (
                   <div className="member-confirm">
                     <button
@@ -251,6 +277,19 @@ export function TasksModal({ projectId, projectName, onClose }: TasksModalProps)
       )}
 
       {rowError && <p className="field-error">{rowError}</p>}
+
+      {commentsTask && (
+        <CommentsDrawer
+          taskId={commentsTask.id}
+          taskTitle={commentsTask.title}
+          onClose={() => {
+            getAllComments(commentsTask.id)
+              .then((comments) => setCommentCounts((prev) => ({ ...prev, [commentsTask.id]: comments.length })))
+              .catch(() => undefined);
+            setCommentsTask(null);
+          }}
+        />
+      )}
     </Modal>
   );
 }

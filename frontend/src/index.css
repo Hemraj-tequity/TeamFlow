@@ -416,10 +416,65 @@ button {
   color: #8a231d;
 }
 
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.35rem;
+  margin-left: 0.4rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
 @media (max-width: 640px) {
   .task-form-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* Comments */
+.comment-item {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.comment-main {
+  width: 100%;
+}
+
+.comment-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+}
+
+.comment-content {
+  margin: 0.3rem 0 0;
+  white-space: pre-wrap;
+}
+
+.comment-edit-textarea {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
 }
 
 .badge {
@@ -516,6 +571,62 @@ button {
 
 .modal-wide {
   max-width: 620px;
+}
+
+/* Drawer (slides in from the right, over any open modal) */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 18, 25, 0.35);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-panel {
+  background: var(--surface);
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  box-shadow: -10px 0 40px rgba(16, 24, 40, 0.25);
+  display: flex;
+  flex-direction: column;
+  animation: drawer-slide-in 0.18s ease-out;
+}
+
+@keyframes drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.drawer-header h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.drawer-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .drawer-panel {
+    max-width: 100%;
+  }
 }
 
 .modal-header {

@@ -44,6 +44,15 @@ export interface Task {
   updatedAt: string;
 }
 
+export interface Comment {
+  id: string;
+  content: string;
+  taskId: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface User {
   id: number;
   name: string;

@@ -28,6 +28,11 @@ export const endpoints = {
   addProjectMember: "/project/member",
   getAllProjectMembers: (projectId: string) => `/project/member/${projectId}/all`,
   deleteProjectMember: "/project/member",
+
+  createComment: "/comment",
+  getAllComments: (taskId: string) => `/comment/${taskId}/all`,
+  updateComment: (id: string) => `/comment/${id}`,
+  deleteComment: "/comment",
 };
 
 export class ApiRequestError extends Error {
