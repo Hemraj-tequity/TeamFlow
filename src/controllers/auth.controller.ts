@@ -34,9 +34,17 @@ export const loginController = async (
 
   const user = await loginUser(email, password);
 
+  res.cookie("refreshToken", user.refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  });
+
+  const { refreshToken, ...userWithoutRefreshToken } = user;
+
   return res.status(200).json({
     success: true,
     message: AUTH_MESSAGES.LOGIN_SUCCESS,
-    user,
+    user: userWithoutRefreshToken ,
   });
 };
