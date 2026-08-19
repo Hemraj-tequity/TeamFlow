@@ -19,7 +19,7 @@ export const generateRefreshToken = (userId: number) => {
 
 export const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  limit: 15,               // 1 requests
+  limit: 5,               // 1 requests
   legacyHeaders: false,    // force browser to user latest header
 
   handler: (req: any) => {
