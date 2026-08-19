@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { ApiError } from "./ApiError.js";
 import { AUTH_MESSAGES } from "./constants.js";
 
@@ -21,6 +21,10 @@ export const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   limit: 5,               // 1 requests
   legacyHeaders: false,    // force browser to user latest header
+
+  keyGenerator: (req: any) => {
+    return `${ipKeyGenerator(req.ip)}:${req.body?.email}`;
+  },
 
   handler: (req: any) => {
     const resetTime = req.rateLimit?.resetTime;
