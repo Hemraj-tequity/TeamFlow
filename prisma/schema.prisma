@@ -29,6 +29,18 @@ model User {
   comments            Comment[]
 }
 
+model OtpVerification {
+  id         String    @id @default(cuid())
+  sendto     String    @unique
+  otpHash    String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([sendto])
+}
+
 enum OrganizationStatus {
   ACTIVE
   INACTIVE
