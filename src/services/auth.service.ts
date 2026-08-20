@@ -152,8 +152,18 @@ export const verifyOTPUser = async (email: string, otp: string) => {
     throw ApiError.unauthorized(USERS_MESSAGES.USER_NOT_FOUND);
   }
 
-  const accessToken = generateAccessToken(user.id);
-  const refreshToken = generateRefreshToken(user.id);
+  const accessToken = generateAccessToken(
+    user.id,
+    user.role,
+    user.name,
+    user.email,
+  );
+  const refreshToken = generateRefreshToken(
+    user.id,
+    user.role,
+    user.name,
+    user.email,
+  );
 
   await prisma.user.update({
     where: { email },
