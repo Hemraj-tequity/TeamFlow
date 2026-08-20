@@ -1,7 +1,8 @@
 export const API_BASE_PATH = "/api";
 
 export const AUTH_BASE_PATH = "/auth";
-export const AUTH_LOGIN_PATH = "/login";
+export const AUTH_SEND_OTP_PATH = "/send-otp";
+export const AUTH_VERIFY_OTP_PATH = "/verify-otp";
 
 export const endpoints = {
   getAllUsers: "/users",
@@ -44,14 +45,23 @@ export const COMMON_MESSAGES = {
 
 export const USERS_MESSAGES = {
   GETALL_USERS: "Users fetched successfully",
+  USER_NOT_FOUND: "User not found"
 } as const;
 
 export const AUTH_MESSAGES = {
-  LOGIN_SUCCESS: "Login successful",
+  LOGIN_SUCCESS: "OTP sended successfully",
   LOGIN_FAILED: "Login failed",
   MISSING_CREDENTIALS: "Email and password are required",
   INVALID_CREDENTIALS: "Invalid email or password",
   RATE_LIMIT: "Too many login attempts. Please try again later.",
+  REGISTER_SUCCESS: "User registered successfully",
+  MISSING_REGISTER_FIELDS: "Email, password, name, and role are required",
+  USER_ALREADY_EXISTS: "User already exists",
+  EMAIL_AND_OTP_REQUIRED: "Email and OTP is required",
+  EMAIL_OTP_NOT_FOUND: "Email and OTP not found",
+  INVALID_OTP: "Invalid OTP",
+  OTP_EXPIRED: "OTP expired",
+  TOO_MANY_WRONG_ATTEMPT: "Too many wrong attempts",
 } as const;
 
 export const ORG_MESSAGES = {

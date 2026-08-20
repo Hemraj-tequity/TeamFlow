@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  OtpVerification: 'OtpVerification',
   Organization: 'Organization',
   OrganizationMember: 'OrganizationMember',
   Project: 'Project',
@@ -88,6 +89,19 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const OtpVerificationScalarFieldEnum = {
+  id: 'id',
+  sendto: 'sendto',
+  otpHash: 'otpHash',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OtpVerificationScalarFieldEnum = (typeof OtpVerificationScalarFieldEnum)[keyof typeof OtpVerificationScalarFieldEnum]
 
 
 export const OrganizationScalarFieldEnum = {
