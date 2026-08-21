@@ -11,6 +11,7 @@ import {
 import { ApiError } from "../utils/ApiError.js";
 import { Resend } from "resend";
 import { OTPMAIL } from "../EmailTemplate/Otp.js";
+import jwt from "jsonwebtoken";
 
 // export const registerUser = async (
 //   email: string,
@@ -177,4 +178,34 @@ export const verifyOTPUser = async (email: string, otp: string) => {
     accessToken,
     refreshToken,
   };
+};
+
+export const refreshTokenUser = async (refToken: string) => {
+  if (!refToken) {
+    throw ApiError.badRequest(AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED);
+  }
+
+  const decoded = jwt.verify(refToken, process.env.JWT_SECRET!);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: decoded.userId,
+    },
+  });
+
+  if (user?.refreshToken !== refToken) {
+    throw ApiError.unauthorized(AUTH_MESSAGES.INVALID_REFRESH_TOKEN);
+  }
+
+  const accessToken = generateAccessToken(
+    user.id,
+    user.role,
+    user.name,
+    user.email,
+  );
+
+  return {
+    user,
+    accessToken,
+  }
 };

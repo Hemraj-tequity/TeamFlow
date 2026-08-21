@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { sendOTPUser, verifyOTPUser, /* registerUser */ } from "../services/auth.service.js";
+import { sendOTPUser, verifyOTPUser, refreshTokenUser /* registerUser */ } from "../services/auth.service.js";
 import { AUTH_MESSAGES } from "../utils/constants.js";
 // import { Resend } from "resend";
 
@@ -46,15 +46,38 @@ export const VerifyOTPController = async (
     sameSite: "strict",
   });
 
-  const { user: userData, accessToken } = response;
-  const { password, refreshToken, ...safeUser } = userData;
+  res.cookie("accessToken", response.accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  });
+
+  const { user } = response;
+  const { password, refreshToken, ...safeUser } = user;
 
   return res.status(200).json({
     success: true,
     message: AUTH_MESSAGES.LOGIN_SUCCESS,
-    user: {
-      ...safeUser,
-      accessToken,
-    },
+    user: safeUser,
+  });
+};
+
+export const RefreshTokenController = async (
+  req: Request,
+  res: Response
+) => {
+  const refToken = req.cookies.refreshToken;
+
+  const response = await refreshTokenUser(refToken);
+
+  res.cookie("accessToken", response.accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS,
   });
 };

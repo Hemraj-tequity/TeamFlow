@@ -6,6 +6,7 @@ export const API_BASE_PATH = "/api";
 export const AUTH_BASE_PATH = "/auth";
 export const AUTH_SEND_OTP_PATH = "/send-otp";
 export const AUTH_VERIFY_OTP_PATH = "/verify-otp";
+export const AUTH_REFRESH_TOKEN_PATH = "/refresh";
 
 export const endpoints = {
   getAllUsers: "/users",
@@ -65,6 +66,9 @@ export const AUTH_MESSAGES = {
   INVALID_OTP: "Invalid OTP",
   OTP_EXPIRED: "OTP expired",
   TOO_MANY_WRONG_ATTEMPT: "Too many wrong attempts",
+  REFRESH_TOKEN_REQUIRED: "Refresh token is required",
+  INVALID_REFRESH_TOKEN: "Invalid refresh token please login again",
+  REFRESH_TOKEN_SUCCESS: "Token regenerated successfully.",
 } as const;
 
 export const ORG_MESSAGES = {
