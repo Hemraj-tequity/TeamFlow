@@ -205,7 +205,6 @@ export const refreshTokenUser = async (refToken: string) => {
   );
 
   return {
-    user,
-    accessToken,
+    accessToken
   }
 };

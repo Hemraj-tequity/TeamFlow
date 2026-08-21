@@ -46,19 +46,16 @@ export const VerifyOTPController = async (
     sameSite: "strict",
   });
 
-  res.cookie("accessToken", response.accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-  });
-
-  const { user } = response;
-  const { password, refreshToken, ...safeUser } = user;
+  const { user: userData, accessToken } = response;
+  const { password, refreshToken, ...safeUser } = userData;
 
   return res.status(200).json({
     success: true,
     message: AUTH_MESSAGES.LOGIN_SUCCESS,
-    user: safeUser,
+    user: {
+      ...safeUser,
+      accessToken,
+    },
   });
 };
 
@@ -70,14 +67,9 @@ export const RefreshTokenController = async (
 
   const response = await refreshTokenUser(refToken);
 
-  res.cookie("accessToken", response.accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-  });
-
   return res.status(200).json({
     success: true,
     message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    accessToken: response.accessToken
   });
 };
