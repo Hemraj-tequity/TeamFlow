@@ -673,6 +673,14 @@ button {
   max-width: 360px;
 }
 
+.auth-card .btn {
+  width: 100%;
+}
+
+.auth-card .btn + .btn {
+  margin-top: 0.6rem;
+}
+
 .auth-card h1 {
   margin: 0 0 0.25rem;
   font-size: 1.4rem;

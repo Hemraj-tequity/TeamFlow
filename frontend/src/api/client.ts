@@ -3,7 +3,8 @@ import type { ApiFailure } from "./types";
 const API_BASE_PATH = "http://localhost:3000/api";
 
 export const endpoints = {
-  login: "/auth/login",
+  sendOtp: "/auth/send-otp",
+  verifyOtp: "/auth/verify-otp",
 
   getAllUsers: "/users",
 

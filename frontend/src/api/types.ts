@@ -10,7 +10,6 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface Organization {

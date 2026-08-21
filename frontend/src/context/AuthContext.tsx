@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { login as loginRequest } from "../api/auth";
+import { sendOtp as sendOtpRequest, verifyOtp as verifyOtpRequest } from "../api/auth";
 import { clearAccessToken, setAccessToken } from "../api/client";
 import type { AuthUser } from "../api/types";
 
@@ -15,7 +15,8 @@ interface StoredUser {
 interface AuthContextValue {
   user: StoredUser | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  sendOtp: (email: string, password: string) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -34,8 +35,12 @@ const loadStoredUser = (): StoredUser | null => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<StoredUser | null>(() => loadStoredUser());
 
-  const login = async (email: string, password: string) => {
-    const authUser = await loginRequest(email, password);
+  const sendOtp = async (email: string, password: string) => {
+    await sendOtpRequest(email, password);
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    const authUser = await verifyOtpRequest(email, otp);
     setAccessToken(authUser.accessToken);
 
     const stored: StoredUser = {
@@ -55,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(
-    () => ({ user, isAuthenticated: user !== null, login, logout }),
+    () => ({ user, isAuthenticated: user !== null, sendOtp, verifyOtp, logout }),
     [user]
   );
 
