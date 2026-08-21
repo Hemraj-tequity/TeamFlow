@@ -1,3 +1,6 @@
+export const ALGORITHM = "aes-256-gcm";
+
+
 export const API_BASE_PATH = "/api";
 
 export const AUTH_BASE_PATH = "/auth";

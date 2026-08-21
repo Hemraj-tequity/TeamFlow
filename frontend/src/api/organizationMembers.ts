@@ -1,10 +1,11 @@
 import { apiRequest, endpoints } from "./client";
+import { encryptValue, decryptValue } from "../utils/crypto";
 import type { OrganizationMember } from "./types";
 
 interface GetAllOrganizationMembersResponse {
   success: true;
   message: string;
-  organizationMembers: OrganizationMember[];
+  organizationMembers: string;
 }
 
 interface CreateOrganizationMemberResponse {
@@ -14,15 +15,21 @@ interface CreateOrganizationMemberResponse {
 }
 
 export const getAllOrganizationMembers = (organizationId: string) =>
-  apiRequest<GetAllOrganizationMembersResponse>(endpoints.getAllOrganizationMembers(organizationId)).then(
-    (res) => res.organizationMembers
+  apiRequest<GetAllOrganizationMembersResponse>(endpoints.getAllOrganizationMembers(organizationId)).then((res) =>
+    decryptValue<OrganizationMember[]>(res.organizationMembers)
   );
 
-export const createOrganizationMember = (userId: number, organizationId: string) =>
-  apiRequest<CreateOrganizationMemberResponse>(endpoints.createOrganizationMember, {
+export const createOrganizationMember = async (userId: number, organizationId: string) => {
+  const [encryptedUserId, encryptedOrganizationId] = await Promise.all([
+    encryptValue(userId),
+    encryptValue(organizationId),
+  ]);
+
+  return apiRequest<CreateOrganizationMemberResponse>(endpoints.createOrganizationMember, {
     method: "POST",
-    body: { userId, organizationId },
+    body: { userId: encryptedUserId, organizationId: encryptedOrganizationId },
   }).then((res) => res.organizationMember);
+};
 
 export const deleteOrganizationMember = (memberId: string) =>
   apiRequest<{ success: true; message: string }>(endpoints.deleteOrganizationMember(memberId), {

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ORG_MEMBER_MESSAGES } from "../utils/constants.js";
 import { createOrganizationMember, deleteOrganizationMember, getAllOrganizationMember } from "../services/organization-member.service.js";
+import { encrypt, decrypt } from "../utils/commanhelper.js";
 
 export const createOrganizationMemberController = async (
   req: Request,
@@ -8,7 +9,10 @@ export const createOrganizationMemberController = async (
 ) => {
   const { userId, organizationId } = req.body;
 
-  const organizationMember = await createOrganizationMember(userId, organizationId);
+  const UId = decrypt(userId);
+  const OrgId = decrypt(organizationId);
+
+  const organizationMember = await createOrganizationMember(UId, OrgId);
 
   return res.status(201).json({
     success: true,
@@ -25,10 +29,12 @@ export const getAllOrganizationMemberController = async (
 
   const organizationMembers = await getAllOrganizationMember(orgId);
 
+  const encryptedData = encrypt(organizationMembers);
+  
   return res.status(200).json({
     success: true,
     message: ORG_MEMBER_MESSAGES.GETALL_MEMBERS_SUCCESS,
-    organizationMembers,
+    organizationMembers: encryptedData,
   });
 };
 
