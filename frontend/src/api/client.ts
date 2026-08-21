@@ -5,6 +5,7 @@ const API_BASE_PATH = "http://localhost:3000/api";
 export const endpoints = {
   sendOtp: "/auth/send-otp",
   verifyOtp: "/auth/verify-otp",
+  refresh: "/auth/refresh",
 
   getAllUsers: "/users",
 
@@ -54,13 +55,46 @@ export const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);
 export const setAccessToken = (token: string) => localStorage.setItem(ACCESS_TOKEN_KEY, token);
 export const clearAccessToken = () => localStorage.removeItem(ACCESS_TOKEN_KEY);
 
+// Called when a token refresh attempt itself fails (refresh token missing/expired) —
+// AuthContext wires this to logout() so the app falls back to the login screen.
+let sessionExpiredHandler: (() => void) | null = null;
+export const setSessionExpiredHandler = (handler: () => void) => {
+  sessionExpiredHandler = handler;
+};
+
+// Auth endpoints never get the 401 -> refresh -> retry treatment: send-otp/verify-otp
+// don't carry a token yet, and a 401 from refresh itself means the refresh token is dead.
+const NO_REFRESH_RETRY_PATHS: string[] = [endpoints.sendOtp, endpoints.verifyOtp, endpoints.refresh];
+
 interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
 }
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const token = getAccessToken();
+interface RefreshResponse {
+  success: true;
+  message: string;
+  accessToken: string;
+}
+
+let refreshPromise: Promise<string> | null = null;
+
+function refreshAccessToken(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = rawRequest<RefreshResponse>(endpoints.refresh, { method: "POST" })
+      .then((res) => {
+        setAccessToken(res.accessToken);
+        return res.accessToken;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+async function rawRequest<T>(path: string, options: RequestOptions, tokenOverride?: string): Promise<T> {
+  const token = tokenOverride !== undefined ? tokenOverride : getAccessToken();
 
   let response: Response;
   try {
@@ -94,4 +128,25 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   return data as T;
+}
+
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  try {
+    return await rawRequest<T>(path, options);
+  } catch (err) {
+    const canRetryAfterRefresh = err instanceof ApiRequestError && err.status === 401 && !NO_REFRESH_RETRY_PATHS.includes(path);
+
+    if (!canRetryAfterRefresh) {
+      throw err;
+    }
+
+    try {
+      const newToken = await refreshAccessToken();
+      return await rawRequest<T>(path, options, newToken);
+    } catch {
+      clearAccessToken();
+      sessionExpiredHandler?.();
+      throw err;
+    }
+  }
 }

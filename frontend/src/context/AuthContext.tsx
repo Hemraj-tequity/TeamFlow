@@ -1,6 +1,6 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { sendOtp as sendOtpRequest, verifyOtp as verifyOtpRequest } from "../api/auth";
-import { clearAccessToken, setAccessToken } from "../api/client";
+import { clearAccessToken, setAccessToken, setSessionExpiredHandler } from "../api/client";
 import type { AuthUser } from "../api/types";
 
 const USER_STORAGE_KEY = "admin_panel_user";
@@ -58,6 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(USER_STORAGE_KEY);
     setUser(null);
   };
+
+  useEffect(() => {
+    setSessionExpiredHandler(logout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const value = useMemo(
     () => ({ user, isAuthenticated: user !== null, sendOtp, verifyOtp, logout }),
