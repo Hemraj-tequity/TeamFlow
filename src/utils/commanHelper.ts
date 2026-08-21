@@ -20,7 +20,7 @@ export const encrypt = (data: any) => {
   const result = Buffer.concat([iv, encrypted, authTag]);
 
   return result.toString("base64");
-};
+};  
 
 export const decrypt = (data: any) => {
   const result = Buffer.from(data, "base64");
